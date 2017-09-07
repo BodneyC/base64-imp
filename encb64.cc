@@ -14,6 +14,7 @@ void b64enc(BYTE *group4, BYTE* group3) {
 	group4[1] = ((tmp3[0] & 0x03) << 4) + ((tmp3[1] & 0xF0) >> 4);
 	group4[2] = ((tmp3[1] & 0x0F) << 2) + ((tmp3[2] & 0xC0) >> 6);
 	group4[3] = tmp3[2] & 0x3F;
+
 }
 //------------------------------------------------------------------------------
 int main(int argc, char const *argv[]) {
@@ -22,7 +23,7 @@ int main(int argc, char const *argv[]) {
 		return 1;
 	}
 	int inputLength = strlen(argv[1]);
-	BYTE inputString[255];
+	BYTE inputString[255] = {0};
 	memcpy(inputString, argv[1], inputLength);
 	int charGroups = inputLength / 3; // charGroups: number of three-char groups
 	bool finalEnc = (inputLength % 3 == 0)? false: true;
@@ -31,7 +32,7 @@ int main(int argc, char const *argv[]) {
 	std::cout << "Input: " << inputString << "\nLength: " << inputLength << " chars\n";
 
 	#pragma omp parallel for
-		for (size_t i = 0; i < charGroups; i++) {
+		for (size_t i = 0; i < charGroups + finalEnc; i++) {
 			BYTE group4[4] = {0};
 			BYTE group3[3] = { inputString[i * 3], inputString[(i * 3) + 1], inputString[(i * 3) + 2]};
 
@@ -44,12 +45,19 @@ int main(int argc, char const *argv[]) {
 			}
 
 			b64enc(group4, group3);
+
 			for (size_t out4Count = 0; out4Count < 4; out4Count++) {
 				outputArr[i][out4Count] = b64Chars[group4[out4Count]];
 			}
+
+			if (group3[1] == 0) {
+				outputArr[i][3] = '=';
+				outputArr[i][2] = '=';
+			} else if (group3[2] == 0) {
+				outputArr[i][3] = '=';
+			}
 		}
 
-	// deal with (potential) final three
 
 	std::cout << "Output string: ";
 	for (size_t i = 0; i < charGroups + finalEnc; i++) {
