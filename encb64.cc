@@ -6,7 +6,7 @@ typedef unsigned char BYTE;
 static const BYTE b64Chars[65] =
 	"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 //------------------------------------------------------------------------------
-void b64enc(BYTE *group4, BYTE* group3) {
+void b64enc(BYTE* group4, BYTE* group3) {
 	BYTE tmp3[3];
 	memcpy(tmp3, group3, 3);
 
@@ -17,14 +17,8 @@ void b64enc(BYTE *group4, BYTE* group3) {
 
 }
 //------------------------------------------------------------------------------
-int main(int argc, char const *argv[]) {
-	if (argc != 2) { // CLAP
-		std::cout << "Incorrect input\n";
-		return 1;
-	}
-	int inputLength = strlen(argv[1]);
-	BYTE inputString[255] = {0};
-	memcpy(inputString, argv[1], inputLength);
+std::string encode(BYTE* inputString, int inputLength) {
+	std::string outputString;
 	int charGroups = inputLength / 3; // charGroups: number of three-char groups
 	bool finalEnc = (inputLength % 3 == 0)? false: true;
 	BYTE outputArr[charGroups + finalEnc][4]; // [# of groups (+1 for remainder)][chars per output group]
@@ -58,13 +52,27 @@ int main(int argc, char const *argv[]) {
 			}
 		}
 
-
-	std::cout << "Output string: ";
 	for (size_t i = 0; i < charGroups + finalEnc; i++) {
 		for (size_t j = 0; j < 4; j++) {
-			std::cout << outputArr[i][j];
+			outputString += outputArr[i][j];
 		}
 	}
+
+	return outputString;
+}
+//------------------------------------------------------------------------------
+int main(int argc, char const *argv[]) {
+	if (argc != 2) { // CLAP
+		std::cout << "Incorrect input\n";
+		return 1;
+	}
+	int inputLength = strlen(argv[1]);
+	BYTE inputString[255] = {0};
+	memcpy(inputString, argv[1], inputLength);
+
+	std::string outputString = encode(inputString, inputLength);
+
+	std::cout << "Output string: " << outputString;
 
 	return 0;
 }
