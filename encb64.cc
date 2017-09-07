@@ -62,17 +62,34 @@ std::string encode(BYTE* inputString, int inputLength) {
 }
 //------------------------------------------------------------------------------
 int main(int argc, char const *argv[]) {
-	if (argc != 2) { // CLAP
-		std::cout << "Incorrect input\n";
+	bool encSwitch;
+	int inputLength;
+	BYTE inputString[255] = {0};
+	std::string outputString;
+
+	if (argc == 3) { // CLAP
+		// strcmp() returns 0 if equal...
+		if (!strcmp(argv[1], "-e")) {
+			encSwitch = true;
+		} else if (!strcmp(argv[1], "-d")) {
+			encSwitch = false;
+		} else {
+			std::cout << "\nIncorrect input. Command format:\n\tbenc64 [-e][-d] [input_string]\n";
+			return 1;
+		}
+	} else {
+		std::cout << "\nIncorrect input. Command format:\n\tbenc64 [-e][-d] [input_string]\n";
 		return 1;
 	}
-	int inputLength = strlen(argv[1]);
-	BYTE inputString[255] = {0};
-	memcpy(inputString, argv[1], inputLength);
 
-	std::string outputString = encode(inputString, inputLength);
+	inputLength = strlen(argv[2]);
+	memcpy(inputString, argv[2], inputLength);
 
-	std::cout << "Output string: " << outputString;
+	if (encSwitch) {
+		outputString = encode(inputString, inputLength);
+	}
+
+	std::cout << "\nOutput string: " << outputString << std::endl;
 
 	return 0;
 }
