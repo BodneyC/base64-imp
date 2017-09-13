@@ -5,11 +5,11 @@ There are plenty of libraries and other implementations of base64 encoders and d
 
 ## Use of Program
 
-This program (currently) takes a string from the command line (no switches) and outputs the string in base64 so:
+This program (currently) takes one of two switches from the command line, either '-d' for decode or '-e' for encode both are followed by the string to en/de-code.
 
-    $ encb64 <string>
+    $ encb64 [-d|-e] <string>
 
-But I intend to make the program convert text files as well as output to a text file (instead of stdout). I also need a decoder I suppose.
+I also intend to make the program convert text files as well as output to a text file (instead of stdout). I also need a decoder I suppose.
 
 ## Compilation (TBC)
 
